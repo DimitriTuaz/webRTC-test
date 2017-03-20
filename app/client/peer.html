@@ -16,29 +16,43 @@
                 var newText = document.createTextNode(message);
                 received.appendChild(newText);
             });
+
+            //Send the message in the text area to the peer (enter the number of the peer in the input box)
             document.getElementById("send").onclick= function(){
                 var message = document.getElementById('message').value;
-                //Send a message to the designated peer (listed by order of connection)
                 var destNumber = document.getElementById('destNumber').value;
-                channel[destNumber-1].send(message);
+                //Test if the peer number is in the list
+                if(destNumber > channel.length || destNumber <= 0 || !Number(destNumber)){
+                    alert('There is no peer n°' + destNumber + '.\nEnter a valid peer number');
+                    document.getElementById('destNumber').value = null;
+                }
+                else{
+                    channel[destNumber-1].send(message);    
+                }
             };
+
             //Connect with the peer whose Id is in the text area
             document.getElementById("start").onclick= function(){
                 var destId = document.getElementById('destId').value;
                 startCommunication(destId); 
+                document.getElementById('destId').value = null;
             };
         }, false);
     </script>
 </head>
 <body>
-    <h2>Peer : <span id=peerId></span></h2>
+    <h2>Peer ID: <span id=peerId></span></h2>
+    <p>List of connected peer(s) : </p>
     <ul id='connected'>
     </ul>
     <input type="text" id="destId" placeholder="ID of the peer to connect to"></input>
     <button id="start">Connect with this peer</button>
-    <p id="received"></p>
-    <input type="text" id="destNumber" placeholder="Send message to : "></input>
+    <hr>
+    <input type="text" id="destNumber" placeholder="Enter a peer number : "></input>
     <textarea id="message"></textarea>
     <button id="send">Send message</button>
+    <hr>
+    <p>Received messages from other peers : </p>
+    <p id="received"></p>
 </body>
 </html>

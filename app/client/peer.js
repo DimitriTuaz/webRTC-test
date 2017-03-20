@@ -72,8 +72,9 @@ function initPeer(messageCallback){
 
         _commChannel.onmessage = function(message){
             messageCallback(message.data);
+            console.log(message);
         };
-      
+
         //Add on the page the Id of the peer we connected to
         var connectedElt = document.createElement("li");
         connectedElt.textContent = index + " : " + peerId;
