@@ -23,14 +23,16 @@
             //Connect with the peer whose Id is in the text area
             document.getElementById("start").onclick= function(){
                 var destId = document.getElementById('destId').value;
-                startCommunication(destId);
+                startCommunication(destId); 
             };
         }, false);
     </script>
 </head>
 <body>
     <h2>Peer : <span id=peerId></span></h2>
-    <input type="text" id="destId"></textarea>
+    <ul id='connected'>
+    </ul>
+    <input type="text" id="destId" placeholder="ID of the peer to connect to"></textarea>
     <button id="start">Connect with this peer</button>
     <p id="received"></p>
     <textarea id="message"></textarea>

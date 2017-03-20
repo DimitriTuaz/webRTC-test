@@ -10,6 +10,8 @@ function initPeer(messageCallback){
     //Array which will contain the peerConnections
     var peerConnections = [];
     window.channel = [];
+    //List of all peers connected to this peer
+    var connectedList = document.getElementById('connected');
 
     function startCommunication(peerId) {
  	    var pc = new RTCPeerConnection(servers, {
@@ -66,6 +68,11 @@ function initPeer(messageCallback){
         _commChannel.onmessage = function(message){
             messageCallback(message.data);
         };
+      
+        //Add on the page the Id of the peer we connected to
+        var connectedElt = document.createElement("li");
+        connectedElt.textContent = peerId;
+        connectedList.appendChild(connectedElt);
     }
     
     window.startCommunication = startCommunication;
@@ -96,6 +103,11 @@ function initPeer(messageCallback){
             messageCallback(event.data);
           };
         };
+
+        //Add on the page the Id of the peer which connected to us
+        var connectedElt = document.createElement("li");
+        connectedElt.textContent = peerId;
+        connectedList.appendChild(connectedElt);
 
         return pc;
     }
