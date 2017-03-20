@@ -12,9 +12,9 @@ function initPeer(messageCallback){
 
     //Array which will contains the peerConnections
     var peerConnections = [];
-    //var channel = [];
-    //List of all peers connected to this peer
+    //List of all peers connected to this peer (on the HTML page)
     var connectedList = document.getElementById('connected');
+    //Index of the RTC connection for this peer 
     var index;
 
     function startCommunication(peerId) {
@@ -72,7 +72,6 @@ function initPeer(messageCallback){
 
         _commChannel.onmessage = function(message){
             messageCallback(message.data);
-            console.log(message);
         };
 
         //Add on the page the Id of the peer we connected to
@@ -106,7 +105,6 @@ function initPeer(messageCallback){
         peerConnections[index-1].ondatachannel = function(event) {
           var receiveChannel = event.channel;
           console.log("channel received");
-          //window.channel = receiveChannel;
           channel.push(receiveChannel);
           receiveChannel.onmessage = function(event){
             messageCallback(event.data);

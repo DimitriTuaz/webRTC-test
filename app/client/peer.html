@@ -27,7 +27,12 @@
                     document.getElementById('destNumber').value = null;
                 }
                 else{
-                    channel[destNumber-1].send(message);    
+                    if(channel[destNumber-1].readyState === "open"){
+                        channel[destNumber-1].send(message);    
+                    }
+                    else{
+                        console.log('The data channel is not in ready state');
+                    }
                 }
             };
 
@@ -48,7 +53,7 @@
     <input type="text" id="destId" placeholder="ID of the peer to connect to"></input>
     <button id="start">Connect with this peer</button>
     <hr>
-    <input type="text" id="destNumber" placeholder="Enter a peer number : "></input>
+    <input type="text" id="destNumber" placeholder="Enter a peer number: "></input>
     <textarea id="message"></textarea>
     <button id="send">Send message</button>
     <hr>
