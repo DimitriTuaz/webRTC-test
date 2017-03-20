@@ -2,27 +2,27 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Callee page</title>
+    <title>Peer page</title>
     <script src="signalingChannelFactory.js"></script>
-    <script src="callee.js"></script>
+    <script src="peer.js"></script>
     <script language="javascript" type="text/javascript">
-        var CALLEE_ID = 2;
+        //Use a random number between 0 and 1000 to define a ID for this Peer
+        var PEER_ID = Math.round(Math.random()*1000);
         window.addEventListener("load", function(){
-            var received = document.getElementById('received')
-            initCallee(function(message){
+            var peerIdElt = document.getElementById('peerId');
+            peerIdElt.textContent = PEER_ID;
+            var received = document.getElementById('received');
+            initPeer(function(message){
                 var newText = document.createTextNode(message);
                 received.appendChild(newText);
             });
-            document.getElementById("send").onclick= function(){
-                var message = document.getElementById('message').value;
-                channel.send(message);
-            };
         }, false);
     </script>
 </head>
 <body>
-    <h2>Callee page</h2>
+    <h2>Peer number <span id=peerId></span></h2>
     <textarea id="message"></textarea>
+    <button id="start">Start</button>
     <p id="received"></p>
     <button id="send">Send message</button>
 </body>
