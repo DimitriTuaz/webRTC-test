@@ -18,7 +18,9 @@
             });
             document.getElementById("send").onclick= function(){
                 var message = document.getElementById('message').value;
-                channel.send(message);
+                //Send a message to the designated peer (listed by order of connection)
+                var destNumber = document.getElementById('destNumber').value;
+                channel[destNumber-1].send(message);
             };
             //Connect with the peer whose Id is in the text area
             document.getElementById("start").onclick= function(){
@@ -32,9 +34,10 @@
     <h2>Peer : <span id=peerId></span></h2>
     <ul id='connected'>
     </ul>
-    <input type="text" id="destId" placeholder="ID of the peer to connect to"></textarea>
+    <input type="text" id="destId" placeholder="ID of the peer to connect to"></input>
     <button id="start">Connect with this peer</button>
     <p id="received"></p>
+    <input type="text" id="destNumber" placeholder="Send message to : "></input>
     <textarea id="message"></textarea>
     <button id="send">Send message</button>
 </body>

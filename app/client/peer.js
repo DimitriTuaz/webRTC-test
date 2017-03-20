@@ -1,3 +1,6 @@
+//Array which will contains the channels
+var channel = [];
+
 function initPeer(messageCallback){
     var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
     var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
@@ -7,11 +10,12 @@ function initPeer(messageCallback){
     var signalingChannel = createSignalingChannel(wsUri, PEER_ID);
     var servers = { iceServers: [{urls: "stun:stun.1.google.com:19302"}] };
 
-    //Array which will contain the peerConnections
+    //Array which will contains the peerConnections
     var peerConnections = [];
-    window.channel = [];
+    //var channel = [];
     //List of all peers connected to this peer
     var connectedList = document.getElementById('connected');
+    var index;
 
     function startCommunication(peerId) {
  	    var pc = new RTCPeerConnection(servers, {
@@ -20,39 +24,40 @@ function initPeer(messageCallback){
             }]
         });
         
- 	    var i = peerConnections.push(pc);
+ 	    index = peerConnections.push(pc);
 
         signalingChannel.onAnswer = function (answer, source) {
             console.log('receive answer from ', source);
-            peerConnections[i-1].setRemoteDescription(new RTCSessionDescription(answer));
+            peerConnections[index-1].setRemoteDescription(new RTCSessionDescription(answer));
         };
 
         signalingChannel.onICECandidate = function (ICECandidate, source) {
             console.log("receiving ICE candidate from ",source);
-            peerConnections[i-1].addIceCandidate(new RTCIceCandidate(ICECandidate));
+            peerConnections[index-1].addIceCandidate(new RTCIceCandidate(ICECandidate));
         };
 
-        peerConnections[i-1].onicecandidate = function (evt) {
+        peerConnections[index-1].onicecandidate = function (evt) {
             if(evt.candidate){ // empty candidate (wirth evt.candidate === null) are often generated
                 signalingChannel.sendICECandidate(evt.candidate, peerId);
             }
         };
 
         //:warning the dataChannel must be opened BEFORE creating the offer.
-        var _commChannel = peerConnections[i-1].createDataChannel('communication', {
+        var _commChannel = peerConnections[index-1].createDataChannel('communication', {
             reliable: false
         });
 
-        peerConnections[i-1].createOffer(function(offer){
-            peerConnections[i-1].setLocalDescription(offer);
+        peerConnections[index-1].createOffer(function(offer){
+            peerConnections[index-1].setLocalDescription(offer);
             console.log('send offer');
             signalingChannel.sendOffer(offer, peerId);
         }, function (e){
             console.error(e);
         });
 
-        window.channel = _commChannel;
-        
+        //Add the channel to the channel array
+        channel.push(_commChannel);
+
         _commChannel.onclose = function(evt) {
             console.log("dataChannel closed");
         };
@@ -71,7 +76,7 @@ function initPeer(messageCallback){
       
         //Add on the page the Id of the peer we connected to
         var connectedElt = document.createElement("li");
-        connectedElt.textContent = peerId;
+        connectedElt.textContent = index + " : " + peerId;
         connectedList.appendChild(connectedElt);
     }
     
@@ -83,8 +88,10 @@ function initPeer(messageCallback){
                 DtlsSrtpKeyAgreement: true
             }]
         });
-            
-        pc.onicecandidate = function (evt) {
+        
+        index = peerConnections.push(pc);
+
+        peerConnections[index-1].onicecandidate = function (evt) {
             if(evt.candidate){ // empty candidate (wirth evt.candidate === null) are often generated
                 signalingChannel.sendICECandidate(evt.candidate, peerId);
             }
@@ -92,13 +99,14 @@ function initPeer(messageCallback){
 
         signalingChannel.onICECandidate = function (ICECandidate, source) {
             console.log("receiving ICE candidate from ",source);
-            pc.addIceCandidate(new RTCIceCandidate(ICECandidate));
+            peerConnections[index-1].addIceCandidate(new RTCIceCandidate(ICECandidate));
         };
 
-        pc.ondatachannel = function(event) {
+        peerConnections[index-1].ondatachannel = function(event) {
           var receiveChannel = event.channel;
           console.log("channel received");
-          window.channel = receiveChannel;
+          //window.channel = receiveChannel;
+          channel.push(receiveChannel);
           receiveChannel.onmessage = function(event){
             messageCallback(event.data);
           };
@@ -106,10 +114,10 @@ function initPeer(messageCallback){
 
         //Add on the page the Id of the peer which connected to us
         var connectedElt = document.createElement("li");
-        connectedElt.textContent = peerId;
+        connectedElt.textContent = index + " : " + peerId;
         connectedList.appendChild(connectedElt);
 
-        return pc;
+        return peerConnections[index-1];
     }
 
     signalingChannel.onOffer = function (offer, source) {
