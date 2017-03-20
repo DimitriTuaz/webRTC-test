@@ -6,8 +6,8 @@
     <script src="signalingChannelFactory.js"></script>
     <script src="peer.js"></script>
     <script language="javascript" type="text/javascript">
-        //Use a random number between 0 and 1000 to define a ID for this Peer
-        var PEER_ID = Math.round(Math.random()*1000);
+        //Ask the user to define an ID for this peer
+        var PEER_ID = prompt('Enter the ID of this peer : ');
         window.addEventListener("load", function(){
             var peerIdElt = document.getElementById('peerId');
             peerIdElt.textContent = PEER_ID;
@@ -16,14 +16,24 @@
                 var newText = document.createTextNode(message);
                 received.appendChild(newText);
             });
+            document.getElementById("send").onclick= function(){
+                var message = document.getElementById('message').value;
+                channel.send(message);
+            };
+            //Connect with the peer whose Id is in the text area
+            document.getElementById("start").onclick= function(){
+                var destId = document.getElementById('destId').value;
+                startCommunication(destId);
+            };
         }, false);
     </script>
 </head>
 <body>
-    <h2>Peer number <span id=peerId></span></h2>
-    <textarea id="message"></textarea>
-    <button id="start">Start</button>
+    <h2>Peer : <span id=peerId></span></h2>
+    <input type="text" id="destId"></textarea>
+    <button id="start">Connect with this peer</button>
     <p id="received"></p>
+    <textarea id="message"></textarea>
     <button id="send">Send message</button>
 </body>
 </html>
