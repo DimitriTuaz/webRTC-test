@@ -38,9 +38,10 @@
 
         //Close the Channels and the RTCconnections when a peer is disconnecting 
         window.addEventListener("beforeunload",function(){
-            for( i=0 ; i<channel.length ; i++){
+            signalingChannel.sendClose();
+            for( i=0 ; i<peerConnections.length ; i++){
                 channel[i].close();
-                peerConnections[i].close();
+                peerConnections[i].close();       
             }
         });
     </script>

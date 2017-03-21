@@ -1,11 +1,10 @@
-//Id of the peer
-var PEER_ID;
 //Array which will contains the channels
 var channel = [];
 //Array which will contains the peerConnections
 var peerConnections = [];
 //
 var connectedPeersId = [];
+var signalingChannel
 
 function initPeer(messageCallback){
     var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
@@ -13,7 +12,7 @@ function initPeer(messageCallback){
     var RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate;
     
     var wsUri = "ws://localhost:8090/";
-    var signalingChannel = createSignalingChannel(wsUri, PEER_ID);
+    signalingChannel = createSignalingChannel(wsUri, PEER_ID);
     var servers = { iceServers: [{urls: "stun:stun.1.google.com:19302"}] };
 
     //List of all peers connected to this peer (on the HTML page)
@@ -74,7 +73,6 @@ function initPeer(messageCallback){
             };
             receiveChannel.onclose = function(event){
                 console.log("dataChannel closed");
-                signalingChannel.sendClose(peerId);
                 connectedList.removeChild(connectedElt);
             };
         };
@@ -98,7 +96,6 @@ function initPeer(messageCallback){
 
             _commChannel.onclose = function(evt) {
                 console.log("dataChannel closed");
-                signalingChannel.sendClose(peerId);
                 connectedList.removeChild(connectedElt);
             };
 

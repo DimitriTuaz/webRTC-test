@@ -16,8 +16,8 @@ function onMessage(ws, message){
         case "init":
             onInit(ws, message.init);
             break;
-        case "close"
-            onClose(message.id);
+        case "close":
+            onClose(ws.id);
             break;
         default:
             throw new Error("invalid message type");
@@ -26,9 +26,17 @@ function onMessage(ws, message){
 
 function onClose(id){
     console.log("peer " + id + " disconnected");
+    //Remove The Id of the closing peer from the connected ID array
+    console.log(connectedPeersId);
+    for(i=0 ; i<connectedPeersId.length ; i++){
+        if(connectedPeersId[i] === id){
+            connectedPeersId.splice(i,1);
+        }
+    }
+    console.log(connectedPeersId);
 }
 
-function onInist(ws, id){
+function onInit(ws, id){
     console.log("init from peer:", id);
     ws.id = id;
     connectedPeers[id] = ws;

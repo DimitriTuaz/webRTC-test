@@ -1,3 +1,6 @@
+//Id of the peer
+var PEER_ID;
+
 function SignalingChannel(id){
 
     var _ws;
@@ -61,18 +64,18 @@ function SignalingChannel(id){
     }
 
     function sendAnswer(answer, destination){
-        _sendMessage("answer", answer, destination);
-        
+        _sendMessage("answer", answer, destination);  
     }
 
-    function sendClose(id){
-        _sendMessage("close", id);    
+    function sendClose(){
+        _sendMessage("close");    
     }
 
     this.connectToTracker = connectToTracker;
     this.sendICECandidate = sendICECandidate;
     this.sendOffer = sendOffer;
     this.sendAnswer = sendAnswer;
+    this.sendClose = sendClose;
 
     //default handler, should be overriden 
     this.onOffer = function(offer, source){
