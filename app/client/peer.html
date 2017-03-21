@@ -17,6 +17,13 @@
                 received.appendChild(newText);
             });
 
+            //Connect with the peer whose Id is in the text area
+            document.getElementById("start").onclick= function(){
+                var destId = document.getElementById('destId').value;
+                startCommunication(destId); 
+                document.getElementById('destId').value = null;
+            };
+
             //Send the message in the text area to the peer (enter the number of the peer in the input box)
             document.getElementById("send").onclick= function(){
                 var message = document.getElementById('message').value;
@@ -27,22 +34,18 @@
                     document.getElementById('destNumber').value = null;
                 }
                 else{
-                    if(channel[destNumber-1].readyState === "open"){
-                        channel[destNumber-1].send(message);    
-                    }
-                    else{
-                        console.log('The data channel is not in ready state');
-                    }
+                    channel[destNumber-1].send(message);   
                 }
             };
-
-            //Connect with the peer whose Id is in the text area
-            document.getElementById("start").onclick= function(){
-                var destId = document.getElementById('destId').value;
-                startCommunication(destId); 
-                document.getElementById('destId').value = null;
-            };
         }, false);
+
+        //Close the Channels and the RTCconnections when a peer is shut down 
+        window.addEventListener("beforeunload",function(){
+            for( i=0 ; i<channel.length ; i++){
+                channel[i].close();
+                peerConnections[i].close();
+            }
+        });
     </script>
 </head>
 <body>

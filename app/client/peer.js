@@ -1,5 +1,7 @@
 //Array which will contains the channels
 var channel = [];
+//Array which will contains the peerConnections
+var peerConnections = [];
 
 function initPeer(messageCallback){
     var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
@@ -10,8 +12,6 @@ function initPeer(messageCallback){
     var signalingChannel = createSignalingChannel(wsUri, PEER_ID);
     var servers = { iceServers: [{urls: "stun:stun.1.google.com:19302"}] };
 
-    //Array which will contains the peerConnections
-    var peerConnections = [];
     //List of all peers connected to this peer (on the HTML page)
     var connectedList = document.getElementById('connected');
     //Index of the RTC connection for this peer 
@@ -60,6 +60,7 @@ function initPeer(messageCallback){
 
         _commChannel.onclose = function(evt) {
             console.log("dataChannel closed");
+            connectedList.removeChild(connectedElt);
         };
 
         _commChannel.onerror = function(evt) {
@@ -103,12 +104,16 @@ function initPeer(messageCallback){
         };
 
         peerConnections[index-1].ondatachannel = function(event) {
-          var receiveChannel = event.channel;
-          console.log("channel received");
-          channel.push(receiveChannel);
-          receiveChannel.onmessage = function(event){
-            messageCallback(event.data);
-          };
+            var receiveChannel = event.channel;
+            console.log("channel received");
+            channel.push(receiveChannel);
+            receiveChannel.onmessage = function(event){
+                messageCallback(event.data);
+            };
+            receiveChannel.onclose = function(event){
+                console.log("dataChannel closed");
+                connectedList.removeChild(connectedElt);
+            };
         };
 
         //Add on the page the Id of the peer which connected to us
