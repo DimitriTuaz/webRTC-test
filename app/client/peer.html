@@ -13,7 +13,8 @@
             peerIdElt.textContent = PEER_ID;
             var received = document.getElementById('received');
             initPeer(function(message){
-                var newText = document.createTextNode(message);
+                var newText = document.createElement("li");
+                newText.textContent = message; 
                 received.appendChild(newText);
             });
 
@@ -29,17 +30,17 @@
                 var message = document.getElementById('message').value;
                 var destNumber = document.getElementById('destNumber').value;
                 //Test if the peer number is in the list
-                if(destNumber > channel.length || destNumber <= 0 || !Number(destNumber)){
-                    alert('There is no peer n°' + destNumber + '.\nEnter a valid peer number');
-                    document.getElementById('destNumber').value = null;
+                if(destNumber <= channel.length && destNumber > 0 && Number(destNumber) && channel[destNumber-1].readyState === "open"){
+                    channel[destNumber-1].send(message);
                 }
                 else{
-                    channel[destNumber-1].send(message);   
+                    alert('There is no peer n°' + destNumber + '.\nEnter a valid peer number');
+                    document.getElementById('destNumber').value = null;
                 }
             };
         }, false);
 
-        //Close the Channels and the RTCconnections when a peer is shut down 
+        //Close the Channels and the RTCconnections when a peer is disconnecting 
         window.addEventListener("beforeunload",function(){
             for( i=0 ; i<channel.length ; i++){
                 channel[i].close();
@@ -51,8 +52,7 @@
 <body>
     <h2>Peer ID: <span id=peerId></span></h2>
     <p>List of connected peer(s) : </p>
-    <ul id='connected'>
-    </ul>
+    <ul id='connected'></ul>
     <input type="text" id="destId" placeholder="ID of the peer to connect to"></input>
     <button id="start">Connect with this peer</button>
     <hr>
@@ -61,6 +61,6 @@
     <button id="send">Send message</button>
     <hr>
     <p>Received messages from other peers : </p>
-    <p id="received"></p>
+    <ul id="received"></ul>
 </body>
 </html>
