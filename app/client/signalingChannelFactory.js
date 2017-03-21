@@ -36,6 +36,9 @@ function SignalingChannel(id){
             case "answer":
                 self.onAnswer(objMessage.answer, objMessage.source);
                 break;
+            case "init":
+                self.onInit(objMessage.connectedPeers);
+                break;
             default:
                 throw new Error("invalid message type");
         }
@@ -80,6 +83,11 @@ function SignalingChannel(id){
     //default handler, should be overriden 
     this.onICECandidate = function(ICECandidate, source){
         console.log("ICECandidate from peer:", source, ':', ICECandidate);
+    };
+
+    //default handler, should be overriden 
+    this.onInit = function(connectedPeers){
+        console.log("Connected peers:", connectedPeers);
     };
 }
 

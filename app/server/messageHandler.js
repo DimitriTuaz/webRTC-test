@@ -1,4 +1,6 @@
 var  connectedPeers = {};
+var  connectedPeersId = [];
+
 function onMessage(ws, message){
     var type = message.type;
     switch (type) {
@@ -23,6 +25,12 @@ function onInit(ws, id){
     console.log("init from peer:", id);
     ws.id = id;
     connectedPeers[id] = ws;
+    connectedPeersId.push(id);
+    //Send the list of connected peers to the peers which just conncet to the signaling server
+    connectedPeers[id].send(JSON.stringify({
+        type:'init',
+        connectedPeers: connectedPeersId,
+    }));
 }
 
 function onOffer(offer, destination, source){

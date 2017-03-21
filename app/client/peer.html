@@ -22,11 +22,24 @@
             });
 
             //Connect with the peer whose ID is in the text area
-            document.getElementById("start").onclick= function(){
+            /*document.getElementById("start").onclick= function(){
                 var destId = document.getElementById('destId').value;
-                startCommunication(destId); 
+                //Prevent the case where the user enter the ID of the peer
+                if(destId !== PEER_ID){
+                    startCommunication(destId);
+                }
+                else{
+                    alert("Don't enter the ID of this peer.");
+                }
                 document.getElementById('destId').value = null;
-            };
+            };*/
+
+            for(i=0 ; i<connectedPeersId.length ; i++){
+                if(connectedPeersId[i] != PEER_ID){
+                    startCommunication(connectedPeersId[i]);    
+                }
+                else{}
+            }
 
             //Send the message in the text area to the peer whose ID is filed in the first input box
             document.getElementById("send").onclick= function(){
@@ -37,7 +50,7 @@
                     channel[destNumber-1].send(message);
                 }
                 else{
-                    alert('There is no peer n°' + destNumber + '.\nEnter a valid peer number');
+                    alert('There is no peer n°' + destNumber + ' connected.\nEnter a valid peer number');
                     document.getElementById('destNumber').value = null;
                 }
             };

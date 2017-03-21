@@ -2,6 +2,8 @@
 var channel = [];
 //Array which will contains the peerConnections
 var peerConnections = [];
+//
+var connectedPeersId = [];
 
 function initPeer(messageCallback){
     var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
@@ -16,6 +18,11 @@ function initPeer(messageCallback){
     var connectedList = document.getElementById('connected');
     //Index of the RTC connection for this peer 
     var index;
+
+    signalingChannel.onInit = function (connectedPeers) {
+        connectedPeersId = connectedPeers;
+        console.log(connectedPeers);
+    };
 
     function startCommunication(peerId) {
  	    var pc = new RTCPeerConnection(servers, {
@@ -79,6 +86,7 @@ function initPeer(messageCallback){
         var connectedElt = document.createElement("li");
         connectedElt.textContent = index + " : " + peerId;
         connectedList.appendChild(connectedElt);
+        console.log("Channel length : " + channel.length);
     }
     
     window.startCommunication = startCommunication;
