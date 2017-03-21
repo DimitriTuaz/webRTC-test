@@ -7,7 +7,7 @@
     <script src="peer.js"></script>
     <script language="javascript" type="text/javascript">
         //Ask the user to define an ID for this peer
-        var PEER_ID = prompt('Enter the ID of this peer : ');
+        PEER_ID = prompt('Enter the ID of this peer : ');
 
         window.addEventListener("load", function(){
             var peerIdElt = document.getElementById('peerId');
@@ -33,14 +33,7 @@
                 }
                 document.getElementById('destId').value = null;
             };*/
-
-            for(i=0 ; i<connectedPeersId.length ; i++){
-                if(connectedPeersId[i] != PEER_ID){
-                    startCommunication(connectedPeersId[i]);    
-                }
-                else{}
-            }
-
+            
             //Send the message in the text area to the peer whose ID is filed in the first input box
             document.getElementById("send").onclick= function(){
                 var message = document.getElementById('message').value;

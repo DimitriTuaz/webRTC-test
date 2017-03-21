@@ -1,3 +1,5 @@
+//Id of the peer
+var PEER_ID;
 //Array which will contains the channels
 var channel = [];
 //Array which will contains the peerConnections
@@ -21,10 +23,26 @@ function initPeer(messageCallback){
 
     signalingChannel.onInit = function (connectedPeers) {
         connectedPeersId = connectedPeers;
-        console.log(connectedPeers);
+        console.log(connectedPeersId.length);
+        /*for(i=0 ; i<connectedPeersId.length ; i++){
+            if(connectedPeersId[i] != PEER_ID){
+                startCommunication(connectedPeersId[i]);    
+            }
+            else{}
+        }*/
+        var i = 0;
+        function connectToPeers(){
+            if(i < connectedPeersId.length){
+                if(connectedPeersId[i] != PEER_ID){
+                    startCommunication(connectedPeersId[i],connectToPeers);    
+                }
+            }
+            i++;
+        }
+        connectToPeers();
     };
 
-    function startCommunication(peerId) {
+    function startCommunication(peerId, callback){
  	    var pc = new RTCPeerConnection(servers, {
             optional: [{
                 DtlsSrtpKeyAgreement: true
@@ -41,6 +59,8 @@ function initPeer(messageCallback){
         signalingChannel.onICECandidate = function (ICECandidate, source) {
             console.log("receiving ICE candidate from ",source);
             peerConnections[index-1].addIceCandidate(new RTCIceCandidate(ICECandidate));
+            //Place the callback here, as is the last step before connection is established
+            callback();
         };
 
         peerConnections[index-1].onicecandidate = function (evt) {
