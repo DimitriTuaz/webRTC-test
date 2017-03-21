@@ -16,12 +16,19 @@ function onMessage(ws, message){
         case "init":
             onInit(ws, message.init);
             break;
+        case "close"
+            onClose(message.id);
+            break;
         default:
             throw new Error("invalid message type");
     }
 }
 
-function onInit(ws, id){
+function onClose(id){
+    console.log("peer " + id + " disconnected");
+}
+
+function onInist(ws, id){
     console.log("init from peer:", id);
     ws.id = id;
     connectedPeers[id] = ws;

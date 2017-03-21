@@ -23,18 +23,12 @@ function initPeer(messageCallback){
 
     signalingChannel.onInit = function (connectedPeers) {
         connectedPeersId = connectedPeers;
-        console.log(connectedPeersId.length);
-        /*for(i=0 ; i<connectedPeersId.length ; i++){
-            if(connectedPeersId[i] != PEER_ID){
-                startCommunication(connectedPeersId[i]);    
-            }
-            else{}
-        }*/
         var i = 0;
+        //Wait for a connection to be really establich before establishing a new one
         function connectToPeers(){
             if(i < connectedPeersId.length){
                 if(connectedPeersId[i] != PEER_ID){
-                    startCommunication(connectedPeersId[i],connectToPeers);    
+                    createPeerConnection(connectedPeersId[i], true, connectToPeers);    
                 }
             }
             i++;
@@ -42,7 +36,7 @@ function initPeer(messageCallback){
         connectToPeers();
     };
 
-    function startCommunication(peerId, callback){
+    function createPeerConnection(peerId, isInitiator, callback){
  	    var pc = new RTCPeerConnection(servers, {
             optional: [{
                 DtlsSrtpKeyAgreement: true
@@ -60,75 +54,15 @@ function initPeer(messageCallback){
             console.log("receiving ICE candidate from ",source);
             peerConnections[index-1].addIceCandidate(new RTCIceCandidate(ICECandidate));
             //Place the callback here, as is the last step before connection is established
-            callback();
+            if(isInitiator === true){
+                callback();                
+            }
         };
 
         peerConnections[index-1].onicecandidate = function (evt) {
             if(evt.candidate){ // empty candidate (wirth evt.candidate === null) are often generated
                 signalingChannel.sendICECandidate(evt.candidate, peerId);
             }
-        };
-
-        //:warning the dataChannel must be opened BEFORE creating the offer.
-        var _commChannel = peerConnections[index-1].createDataChannel('communication', {
-            reliable: false
-        });
-
-        peerConnections[index-1].createOffer(function(offer){
-            peerConnections[index-1].setLocalDescription(offer);
-            console.log('send offer');
-            signalingChannel.sendOffer(offer, peerId);
-        }, function (e){
-            console.error(e);
-        });
-
-        //Add the channel to the channel array
-        channel.push(_commChannel);
-
-        _commChannel.onclose = function(evt) {
-            console.log("dataChannel closed");
-            connectedList.removeChild(connectedElt);
-        };
-
-        _commChannel.onerror = function(evt) {
-            console.error("dataChannel error");
-        };
-
-        _commChannel.onopen = function(){
-            console.log("dataChannel opened");
-        };
-
-        _commChannel.onmessage = function(message){
-            messageCallback(message.data);
-        };
-
-        //Add on the page the Id of the peer we connected to
-        var connectedElt = document.createElement("li");
-        connectedElt.textContent = index + " : " + peerId;
-        connectedList.appendChild(connectedElt);
-        console.log("Channel length : " + channel.length);
-    }
-    
-    window.startCommunication = startCommunication;
-
-    function createPeerConnection(peerId){
-        var pc = new RTCPeerConnection(servers, {
-            optional: [{
-                DtlsSrtpKeyAgreement: true
-            }]
-        });
-        
-        index = peerConnections.push(pc);
-
-        peerConnections[index-1].onicecandidate = function (evt) {
-            if(evt.candidate){ // empty candidate (wirth evt.candidate === null) are often generated
-                signalingChannel.sendICECandidate(evt.candidate, peerId);
-            }
-        };
-
-        signalingChannel.onICECandidate = function (ICECandidate, source) {
-            console.log("receiving ICE candidate from ",source);
-            peerConnections[index-1].addIceCandidate(new RTCIceCandidate(ICECandidate));
         };
 
         peerConnections[index-1].ondatachannel = function(event) {
@@ -140,21 +74,60 @@ function initPeer(messageCallback){
             };
             receiveChannel.onclose = function(event){
                 console.log("dataChannel closed");
+                signalingChannel.sendClose(peerId);
                 connectedList.removeChild(connectedElt);
             };
         };
 
-        //Add on the page the Id of the peer which connected to us
+        if(isInitiator === true){
+            //:warning the dataChannel must be opened BEFORE creating the offer.
+            var _commChannel = peerConnections[index-1].createDataChannel('communication', {
+                reliable: false
+            });
+
+            peerConnections[index-1].createOffer(function(offer){
+                peerConnections[index-1].setLocalDescription(offer);
+                console.log('send offer');
+                signalingChannel.sendOffer(offer, peerId);
+            }, function (e){
+                console.error(e);
+            });
+
+            //Add the channel to the channel array
+            channel.push(_commChannel);
+
+            _commChannel.onclose = function(evt) {
+                console.log("dataChannel closed");
+                signalingChannel.sendClose(peerId);
+                connectedList.removeChild(connectedElt);
+            };
+
+            _commChannel.onerror = function(evt) {
+                console.error("dataChannel error");
+            };
+
+            _commChannel.onopen = function(){
+                console.log("dataChannel opened");
+            };
+
+            _commChannel.onmessage = function(message){
+                messageCallback(message.data);
+            };
+        }
+        
+        //Add on the page the Id of the peer we connected to
         var connectedElt = document.createElement("li");
         connectedElt.textContent = index + " : " + peerId;
         connectedList.appendChild(connectedElt);
 
-        return peerConnections[index-1];
+        if(isInitiator === false){
+            return peerConnections[index-1];
+        }
     }
 
     signalingChannel.onOffer = function (offer, source) {
         console.log('receive offer');
-        var peerConnection = createPeerConnection(source);
+        var peerConnection = createPeerConnection(source, false);
         peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
         peerConnection.createAnswer(function(answer){
             peerConnection.setLocalDescription(answer);

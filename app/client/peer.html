@@ -20,19 +20,6 @@
                 newText.textContent = message; 
                 received.appendChild(newText);
             });
-
-            //Connect with the peer whose ID is in the text area
-            /*document.getElementById("start").onclick= function(){
-                var destId = document.getElementById('destId').value;
-                //Prevent the case where the user enter the ID of the peer
-                if(destId !== PEER_ID){
-                    startCommunication(destId);
-                }
-                else{
-                    alert("Don't enter the ID of this peer.");
-                }
-                document.getElementById('destId').value = null;
-            };*/
             
             //Send the message in the text area to the peer whose ID is filed in the first input box
             document.getElementById("send").onclick= function(){
@@ -62,8 +49,6 @@
     <h2>Peer ID: <span id=peerId></span></h2>
     <p>List of connected peer(s) : </p>
     <ul id='connected'></ul>
-    <input type="text" id="destId" placeholder="ID of the peer to connect to"></input>
-    <button id="start">Connect with this peer</button>
     <hr>
     <input type="text" id="destNumber" placeholder="Enter a peer number: "></input>
     <textarea id="message"></textarea>

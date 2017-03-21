@@ -65,6 +65,10 @@ function SignalingChannel(id){
         
     }
 
+    function sendClose(id){
+        _sendMessage("close", id);    
+    }
+
     this.connectToTracker = connectToTracker;
     this.sendICECandidate = sendICECandidate;
     this.sendOffer = sendOffer;
