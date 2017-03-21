@@ -26,14 +26,12 @@ function onMessage(ws, message){
 
 function onClose(id){
     console.log("peer " + id + " disconnected");
-    //Remove The Id of the closing peer from the connected ID array
-    console.log(connectedPeersId);
+    //Remove The Id of the closing peer from the 'connected pees ID' array
     for(i=0 ; i<connectedPeersId.length ; i++){
         if(connectedPeersId[i] === id){
             connectedPeersId.splice(i,1);
         }
     }
-    console.log(connectedPeersId);
 }
 
 function onInit(ws, id){
@@ -41,7 +39,7 @@ function onInit(ws, id){
     ws.id = id;
     connectedPeers[id] = ws;
     connectedPeersId.push(id);
-    //Send the list of connected peers to the peers which just conncet to the signaling server
+    //Send the list of connected peers to the peers which just connect to the signaling server
     connectedPeers[id].send(JSON.stringify({
         type:'init',
         connectedPeers: connectedPeersId,

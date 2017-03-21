@@ -1,10 +1,12 @@
+//Id of the peer
+var PEER_ID;
 //Array which will contains the channels
 var channel = [];
 //Array which will contains the peerConnections
 var peerConnections = [];
 //
 var connectedPeersId = [];
-var signalingChannel
+var signalingChannel;
 
 function initPeer(messageCallback){
     var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
@@ -20,6 +22,7 @@ function initPeer(messageCallback){
     //Index of the RTC connection for this peer 
     var index;
 
+    //Automatically connect to all peers connected on initialisation
     signalingChannel.onInit = function (connectedPeers) {
         connectedPeersId = connectedPeers;
         var i = 0;
@@ -35,6 +38,7 @@ function initPeer(messageCallback){
         connectToPeers();
     };
 
+    // Create the RTC connection and open a data channel 
     function createPeerConnection(peerId, isInitiator, callback){
  	    var pc = new RTCPeerConnection(servers, {
             optional: [{
