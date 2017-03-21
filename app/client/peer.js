@@ -38,9 +38,7 @@ function initPeer(messageCallback){
 
         peerConnections[index-1].onicecandidate = function (evt) {
             if(evt.candidate){ // empty candidate (wirth evt.candidate === null) are often generated
-                console.log('Avant le crash');
                 signalingChannel.sendICECandidate(evt.candidate, peerId);
-                console.log('Avant le crash');
             }
         };
 

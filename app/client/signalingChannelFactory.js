@@ -46,15 +46,7 @@ function SignalingChannel(id){
         message.type = type;
         message[type] = data;
         message.destination = destination;
-        if(_ws !== "undefined"){
-            console.log("Juste avant le socket.send");
-            _ws.send(JSON.stringify(message));
-            console.log("Juste après le socket.send");
-        }
-        else{
-            console.log("Problem avoided");
-        }
-        
+        _ws.send(JSON.stringify(message));
     }
 
     function sendICECandidate(ICECandidate, destination){
