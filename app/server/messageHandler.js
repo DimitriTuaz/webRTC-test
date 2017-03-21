@@ -27,29 +27,44 @@ function onInit(ws, id){
 
 function onOffer(offer, destination, source){
     console.log("offer from peer:", source, "to peer", destination);
-    connectedPeers[destination].send(JSON.stringify({
-        type:'offer',
-        offer:offer,
-        source:source,
-    }));
+    if(connectedPeers[destination] !== undefined){
+        connectedPeers[destination].send(JSON.stringify({
+            type:'offer',
+            offer:offer,
+            source:source,
+        }));
+    }
+    else{
+        console.log("The peer " + destination + " doesn\'t exist")
+    }
 }
 
 function onAnswer(answer, destination, source){
     console.log("answer from peer:", source, "to peer", destination);
-    connectedPeers[destination].send(JSON.stringify({
-        type: 'answer',
-        answer: answer,
-        source: source,
-    }));
+    if(connectedPeers[destination] !== undefined){
+        connectedPeers[destination].send(JSON.stringify({
+            type: 'answer',
+            answer: answer,
+            source: source,
+        }));
+    }
+    else{
+        console.log("The peer " + destination + " doesn\'t exist")
+    }
 }
 
 function onICECandidate(ICECandidate, destination, source){
     console.log("ICECandidate from peer:", source, "to peer", destination);
-    connectedPeers[destination].send(JSON.stringify({
-        type: 'ICECandidate',
-        ICECandidate: ICECandidate,
-        source: source,
-    }));
+    if(connectedPeers[destination] !== undefined){
+        connectedPeers[destination].send(JSON.stringify({
+            type: 'ICECandidate',
+            ICECandidate: ICECandidate,
+            source: source,
+        }));    
+    }
+    else{
+        console.log("The peer " + destination + " doesn\'t exist")
+    }
 }
 
 module.exports = onMessage;
