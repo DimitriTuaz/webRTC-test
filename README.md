@@ -10,7 +10,7 @@ WebRTC is an API that allows direct browser-to-browser communication. It's widel
 
 - The instructions to complete the test: [INSTRUCTIONS.md](INSTRUCTIONS.md)
 - An in-depth explanation of WebRTC: [webRTC.md](webRTC.md)
-- A minimalist working WebRTC example: [EXAMPLE.md](EXAMPLE.md)
+- The exercise instructions: [EXERCISE.md](EXERCISE.md)
 
 ## Prerequisites:
 
