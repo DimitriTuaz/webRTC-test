@@ -8,9 +8,12 @@
     <script language="javascript" type="text/javascript">
         //Ask the user to define an ID for this peer
         var PEER_ID = prompt('Enter the ID of this peer : ');
+
         window.addEventListener("load", function(){
             var peerIdElt = document.getElementById('peerId');
             peerIdElt.textContent = PEER_ID;
+
+            //Init the peer and handle the received messages
             var received = document.getElementById('received');
             initPeer(function(message){
                 var newText = document.createElement("li");
@@ -18,18 +21,18 @@
                 received.appendChild(newText);
             });
 
-            //Connect with the peer whose Id is in the text area
+            //Connect with the peer whose ID is in the text area
             document.getElementById("start").onclick= function(){
                 var destId = document.getElementById('destId').value;
                 startCommunication(destId); 
                 document.getElementById('destId').value = null;
             };
 
-            //Send the message in the text area to the peer (enter the number of the peer in the input box)
+            //Send the message in the text area to the peer whose ID is filed in the first input box
             document.getElementById("send").onclick= function(){
                 var message = document.getElementById('message').value;
                 var destNumber = document.getElementById('destNumber').value;
-                //Test if the peer number is in the list
+                //Test if the peer number is in the list and the dataChannel Ready
                 if(destNumber <= channel.length && destNumber > 0 && Number(destNumber) && channel[destNumber-1].readyState === "open"){
                     channel[destNumber-1].send(message);
                 }
